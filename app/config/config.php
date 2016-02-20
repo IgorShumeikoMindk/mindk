@@ -6,8 +6,8 @@ return array(
     'main_layout' => __DIR__.'/../../src/Blog/views/layout.html.php',
     'error_500'   => __DIR__.'/../../src/Blog/views/500.html.php',
     'pdo'         => array(
-        'dns'      => 'mysql:dbname=education;host=192.168.64.15',
-        'user'     => 'education',
+        'dns'      => 'mysql:dbname=education;host=127.0.0.1',
+        'user'     => 'root',
         'password' => 'n29OB4uIYGii'
     ),
     'security'    => array(
