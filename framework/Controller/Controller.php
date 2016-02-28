@@ -8,7 +8,16 @@
 
 namespace Framework\Controller;
 
+use Framework\Renderer\Renderer;
 
-class Controller {
+abstract class Controller {
 
+	public function render($partial, $data = array()){
+		$renderer = new Renderer($main);
+		
+		//@TODO ... make full path from partial
+		
+		
+		$render->render($path, $data);
+	}
 }

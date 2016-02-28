@@ -2,6 +2,7 @@
 
 namespace Framework\Response;
 
+// формирование заголовка
 
 class Response {
 	protected $headers = array();
