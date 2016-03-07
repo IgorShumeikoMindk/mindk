@@ -12,8 +12,7 @@ use Framework\Model\ActiveRecord;
 use Framework\Validation\Filter\Length;
 use Framework\Validation\Filter\NotBlank;
 
-class Post extends ActiveRecord
-{
+class Post extends ActiveRecord{
     public $title;
     public $content;
     public $date;

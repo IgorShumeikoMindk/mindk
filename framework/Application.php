@@ -16,6 +16,7 @@ use Framework\Renderer\Renderer;
 		$router = new Router(include('../app/config/routes.php')); //создаем екземпляр и подключаем routers
 		$route =  $router->parseRoute($_SERVER['REQUEST_URI']);
         //print_r($route); //deleate this TODO
+        
 
 	
         try{ // блок try catch робота с исключениями и ошибками

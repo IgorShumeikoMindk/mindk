@@ -2,7 +2,7 @@
 
 namespace Framework\Validation;
 
-class Validation{
+class Validator{
 	//Проверка
 }
 

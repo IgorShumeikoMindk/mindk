@@ -3,12 +3,12 @@
  * Created by PhpStorm.
  * User: igor
  * Date: 28.02.16
- * Time: 18:43
+ * Time: 21:34
  */
 
-namespace Framework\DI;
+namespace Blog\Model;
 
 
-class Service{
+class ActiveRecord {
 
 }
