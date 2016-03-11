@@ -3,8 +3,11 @@
  * Clomment
  */
 class Loader{
-	protected static $instance = null;
+
+	protected static $instance = null; // хранилище для обьекта класа
+
 	public static $namespaces = array(); //создание пустого масива для записи
+
 	public static function getInstance(){
 		if(empty(self::$instance)){ //обращение к свойству
 			self::$instance = new self(); //создание екземпляра свойства  @TODO in Dof
@@ -12,6 +15,7 @@ class Loader{
 		return self::$instance;
         //возврат свойства
 	}
+
 	public static function load($classname){
 		// @Add here some registered $namespaces processing...
 		$path = str_replace('Framework','',$classname); //Заменяет все вхождения строки поиска на строку замены
