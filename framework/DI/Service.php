@@ -1,18 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: igor
- * Date: 08.03.16
- * Time: 19:00
- */
+/* Simple Dependency Injection */
+
 namespace Framework\DI;
 
+use Framework\Application;
+
 class Service {
-    protected static $services = array();
-    public static function set($service_name, $obj){
-        self::$services[$service_name] = $obj;
-    }
-    public static function get($service_name){
-        return empty(self::$services[$service_name]) ? null : self::$services[$service_name];
-    }
+  private static $services = array();
+
+  public static function get($serviceName)
+  {
+      return array_key_exists($serviceName, self::$services) ? self::$services[$serviceName] : null;
+  }
+
+  public static function set($serviceName, $serviceClass)
+  {
+      self::$services[$serviceName] = $serviceClass;
+  }
+
 }
+?>

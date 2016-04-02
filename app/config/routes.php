@@ -19,17 +19,17 @@ return array(
     'signin'         => array(
         'pattern'    => '/signin',
         'controller' => 'Blog\\Controller\\SecurityController',
-        'action'     => 'signin' //on
+        'action'     => 'signin'
     ),
     'login'          => array(
         'pattern'    => '/login',
         'controller' => 'Blog\\Controller\\SecurityController',
-        'action'     => 'login' //on
+        'action'     => 'login'
     ),
     'logout'         => array(
         'pattern'    => '/logout',
         'controller' => 'Blog\\Controller\\SecurityController',
-        'action'     => 'logout'  //on
+        'action'     => 'logout'
     ),
     'update_profile' => array(
         'pattern'       => '/profile',

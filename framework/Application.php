@@ -1,64 +1,89 @@
-<?php 
+<?php
+/**
+ * Application.php
+ *
+ * PHP version 5
+ *
+ * @category   Category Name
+ * @package    Package Name
+ * @subpackage Subpackage name
+ * @author     dimmask <ddavidov@mindk.com>
+ * @copyright  2011-2013 mindk (http://mindk.com). All rights reserved.
+ * @license    http://mindk.com Commercial
+ * @link       http://mindk.com
+ */
 
 namespace Framework;
 
 use Framework\Router\Router;
 use Framework\Exception\HttpNotFoundException;
+use Framework\Exception\BadControllerTypeException;
 use Framework\Exception\AuthRequredException;
-use Framework\Exception\BadResponseTypeException;
 use Framework\Response\Response;
-use Framework\Renderer\Renderer;
+use Framework\DI\Service;
 
- class Application {
- 
-	public function run(){
+//Main variables SDI implementation
+use Framework\Security\Security;
+use Framework\Session\Session;
 
-		$router = new Router(include('../app/config/routes.php')); //создаем екземпляр и подключаем routers
-		$route =  $router->parseRoute($_SERVER['REQUEST_URI']);
-        //print_r($route); //deleate this TODO
-        
+class Application {
+	private $config;
+	private $router;
 
-	
-        try{ // блок try catch робота с исключениями и ошибками
-	        if(!empty($route)){ //проверка наличия route
-		        $controllerReflection = new \ReflectionClass($route['controller']); //создает екземплр и сообщает информацию о классе
-		        $action = $route['action'] . 'Action';  //приводим к нужному виду TODO in Dof
-		        if($controllerReflection->hasMethod($action)){ //проверяет задан ли метод, если метод задан то->
-			        $controller = $controllerReflection->newInstance(); //Создаёт экземпляр класса с переданными аргументами
-			        $actionReflection = $controllerReflection->getMethod($action); // Возвращает экземпляр ReflectionMethod для метода класса
-			        $response = $actionReflection->invokeArgs($controller, $route['params']); //Вызов функции с передачей аргументов, Возвращает результат выполнения вызванной функции.
-			        if($response instanceof Response){ //используется для определения того, является ли текущий объект экземпляром указанного класса.
-				    	// ...
-			        } else {
-				        throw new BadResponseTypeException('Ooops'); //описание исключения
-			        }
-		        }
-			} else {
-		        throw new HttpNotFoundException('Route not found'); //описание исключения
-			}
-        }catch(HttpNotFoundException $e){
-	         // Render 404 or just show msg
-        	$renderer = new Renderer(); //создание екземпляра
-            //переменную content приравниваем к переменной renderer и вызываем метод render и переопределяем его указав параметры
-        	$content = $renderer->render('../src/Blog/views/404.html.php', array(
-        			'code'=>$e->getCode(), //задается параметры с масива
-        			'message'=>$e->getMessage()
-        		));
-        	$response = new Response($content);
+	public function __construct($config_path)
+	{
+			$this->config = include_once $config_path;
+			$this->router = new Router($this->config["routes"]);
+			Service::set('config', $this->config);
 
-        }
-        catch(AuthRequredException $e){
-	    	// Reroute to login page
-	        //$response = new RedirectResponse(...);
-        }
-        catch(\Exception $e){
-	        // Do 500 layout...
-	        echo $e->getMessage();
-        }
-		$response->send();
+			// Setup database connetion...
+			$db = new \PDO($this->config['pdo']['dns'],$this->config['pdo']['user'],$this->config['pdo']['password']);
+			Service::set('pdo', $db);
+
+			//Main variables
+			Service::set('security', new Security());
+			Service::set('session', new Session());
+
 	}
-} 
 
+	public function run(){
+		$route = $this->router->parseRoute();
 
+		try{
+	  if(!empty($route))
+		{
+			if(empty($route['security']) || in_array(Service::get('security')->getUserRole(), @$route['security']))
+			{
+					$controllerReflection = new \ReflectionClass($route['controller']);
+					$action = $route['action'] . 'Action';
+		  		if($controllerReflection->hasMethod($action))
+					{
+			  			$controller = $controllerReflection->newInstance();
+			  			$actionReflection = $controllerReflection->getMethod($action);
+			  			$response = $actionReflection->invokeArgs($controller, $route['params']);
 
-?>
+								// sending
+								$response->send();
+		 				}
+			} else throw new AuthRequredException('Login required');
+	 	} else {
+		 	throw new HttpNotFoundException('Route not found!');
+		}
+ 		}
+		catch(HttpNotFoundException $e)
+		{
+			// Render 404 or just show msg
+			echo $e->getMessage();
+ 		}
+ 		catch(AuthRequredException $e)
+		{
+			echo $e->getMessage();
+ 		}
+ 		catch(\Exception $e)
+		{
+	 		// Do 500 layout...
+	 		echo $e->getMessage();
+ 		}
+
+	}
+}
